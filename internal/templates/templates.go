@@ -12,14 +12,14 @@ import (
 var cache = make(map[string]*template.Template)
 
 func init() {
-	layout := filepath.Join("templates", "layouts", "base.html")
+	layout := filepath.Join("web", "templates", "layouts", "base.html")
 	baseTmpl, err := template.ParseFiles(layout)
 	if err != nil {
 		log.Fatalf("Error parsing base layout: %v", err)
 	}
 
-	// Find all page templates (e.g., templates/*.html)
-	pages, err := filepath.Glob(filepath.Join("templates", "*.html"))
+	// Find all page templates (e.g., web/templates/*.html)
+	pages, err := filepath.Glob(filepath.Join("web", "templates", "*.html"))
 	if err != nil {
 		log.Fatalf("Error globbing templates: %v", err)
 	}
