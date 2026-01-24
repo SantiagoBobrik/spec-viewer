@@ -5,13 +5,14 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"spec-viewer/internal/server"
-	"spec-viewer/internal/socket"
-	"spec-viewer/internal/watcher"
-	"spec-viewer/pkg/logger"
-	"spec-viewer/pkg/ui"
 	"syscall"
 	"time"
+
+	"github.com/SantiagoBobrik/spec-viewer/internal/server"
+	"github.com/SantiagoBobrik/spec-viewer/internal/socket"
+	"github.com/SantiagoBobrik/spec-viewer/internal/watcher"
+	"github.com/SantiagoBobrik/spec-viewer/pkg/logger"
+	"github.com/SantiagoBobrik/spec-viewer/pkg/ui"
 
 	"github.com/spf13/cobra"
 )

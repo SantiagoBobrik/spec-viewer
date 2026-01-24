@@ -4,9 +4,10 @@ import (
 	"context"
 	"os"
 	"path/filepath"
-	"spec-viewer/internal/socket"
-	"spec-viewer/pkg/logger"
-	"spec-viewer/pkg/ui"
+
+	"github.com/SantiagoBobrik/spec-viewer/internal/socket"
+	"github.com/SantiagoBobrik/spec-viewer/pkg/logger"
+	"github.com/SantiagoBobrik/spec-viewer/pkg/ui"
 
 	"github.com/fsnotify/fsnotify"
 )

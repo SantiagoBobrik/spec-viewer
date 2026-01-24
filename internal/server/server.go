@@ -2,8 +2,9 @@ package server
 
 import (
 	"net/http"
-	"spec-viewer/internal/handlers"
-	"spec-viewer/internal/socket"
+
+	"github.com/SantiagoBobrik/spec-viewer/internal/handlers"
+	"github.com/SantiagoBobrik/spec-viewer/internal/socket"
 
 	"github.com/gorilla/mux"
 )

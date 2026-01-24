@@ -1,8 +1,9 @@
 package socket
 
 import (
-	"spec-viewer/pkg/logger"
 	"sync"
+
+	"github.com/SantiagoBobrik/spec-viewer/pkg/logger"
 
 	"github.com/gorilla/websocket"
 )

@@ -2,8 +2,9 @@ package handlers
 
 import (
 	"net/http"
-	"spec-viewer/internal/socket"
-	"spec-viewer/pkg/logger"
+
+	"github.com/SantiagoBobrik/spec-viewer/internal/socket"
+	"github.com/SantiagoBobrik/spec-viewer/pkg/logger"
 
 	"github.com/gorilla/websocket"
 )

@@ -2,7 +2,8 @@ package handlers
 
 import (
 	"net/http"
-	"spec-viewer/internal/templates"
+
+	"github.com/SantiagoBobrik/spec-viewer/internal/templates"
 )
 
 type HomeData struct {
