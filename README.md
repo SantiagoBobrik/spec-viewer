@@ -1,5 +1,7 @@
 # Spec Viewer
-<img width="470" height="224" alt="image" src="https://github.com/user-attachments/assets/cff9bdc6-8461-4dcb-af3e-ef7cf1403873" />
+<p align="center">
+  <img width="470" height="224" alt="image" src="https://github.com/user-attachments/assets/cff9bdc6-8461-4dcb-af3e-ef7cf1403873" />
+</p>
 
 > [!IMPORTANT]
 > This project is currently under active development. Features and interfaces are subject to change.
