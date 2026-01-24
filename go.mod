@@ -1,4 +1,4 @@
-module spec-viewer
+module github.com/SantiagoBobrik/spec-viewer
 
 go 1.24.6
 
