@@ -1,4 +1,5 @@
 # Spec Viewer
+<img width="470" height="224" alt="image" src="https://github.com/user-attachments/assets/cff9bdc6-8461-4dcb-af3e-ef7cf1403873" />
 
 > [!IMPORTANT]
 > This project is currently under active development. Features and interfaces are subject to change.
@@ -6,6 +7,8 @@
 Spec Viewer is a specialized visualization tool designed to accompany the **Spec Kit** ecosystem. It facilitates **Spec Driven Development (SDD)** by providing a high-fidelity, live preview of technical specifications as they evolve.
 
 Unlike generic Markdown viewers, Spec Viewer is tailored to the specific needs of the SDD workflow, ensuring that specifications remain the readable and authoritative source of truth for your development process. It serves as the visual interface for your "living specifications," allowing developers and stakeholders to review architectural decisions and data models in real-time.
+
+
 
 ## Features
 
