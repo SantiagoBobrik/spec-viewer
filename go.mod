@@ -8,6 +8,7 @@ require (
 	github.com/gorilla/websocket v1.5.3
 	github.com/lmittmann/tint v1.1.2
 	github.com/spf13/cobra v1.10.2
+	github.com/yuin/goldmark v1.7.16
 )
 
 require (

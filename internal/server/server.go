@@ -17,7 +17,8 @@ type Config struct {
 func New(hub *socket.Hub, config Config) *http.Server {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/", handlers.HomeHandler)
+	r.HandleFunc("/", handlers.ListSpecsHandler(config.Folder))
+	r.HandleFunc("/view", handlers.ViewSpecHandler(config.Folder))
 	r.PathPrefix("/specs/").Handler(http.StripPrefix("/specs/", http.FileServer(http.Dir(config.Folder))))
 	r.HandleFunc("/ws", handlers.WebSocketHandler(hub))
 

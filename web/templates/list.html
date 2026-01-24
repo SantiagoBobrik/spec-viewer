@@ -1,0 +1,27 @@
+{{ define "content" }}
+<div class="max-w-4xl mx-auto mt-10">
+    <h2 class="text-3xl font-bold mb-6 text-indigo-400">Available Specs</h2>
+    <div class="bg-gray-800 shadow rounded-lg overflow-hidden">
+        <ul class="divide-y divide-gray-700">
+            {{ range .Files }}
+            <li class="hover:bg-gray-700 transition duration-150 ease-in-out">
+                <a href="/view?file={{ . }}" class="block px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm font-medium text-indigo-300 truncate">
+                            {{ . }}
+                        </div>
+                        <div class="ml-2 flex-shrink-0">
+                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </div>
+                </a>
+            </li>
+            {{ else }}
+            <li class="px-6 py-4 text-gray-400 text-center">No specs found.</li>
+            {{ end }}
+        </ul>
+    </div>
+</div>
+{{ end }}
