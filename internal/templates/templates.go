@@ -67,9 +67,8 @@ func Init(folder string) {
 
 // PageData wraps the content data with global layout data like Specs.
 type PageData struct {
-	Data       any
-	Specs      []spec.Spec
-	ActivePath string
+	Data  any
+	Specs []spec.Spec
 }
 
 // Render executes the cached template.
@@ -86,15 +85,13 @@ func Render(w http.ResponseWriter, page string, data any, activePath ...string) 
 		log.Printf("Error fetching specs: %v", err)
 	}
 
-	var currentPath string
 	if len(activePath) > 0 {
-		currentPath = activePath[0]
+		spec.MarkActive(specs, activePath[0])
 	}
 
 	pageData := PageData{
-		Data:       data,
-		Specs:      specs,
-		ActivePath: currentPath,
+		Data:  data,
+		Specs: specs,
 	}
 
 	// Execute the "base.html" template.

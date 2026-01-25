@@ -18,60 +18,8 @@
     <span class="font-bold">Spec Viewer</span>
   </div>
 
-  <nav class="flex-1 overflow-y-auto flex flex-col gap-6">
-    {{ range .Specs }}
-    <div class="flex flex-col gap-2">
-      <!-- Spec Group Header (Folder) -->
-      <div
-        class="flex items-center text-sm font-medium text-muted-foreground px-2"
-      >
-        <svg
-          class="w-4 h-4 mr-2"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
-          ></path>
-        </svg>
-        {{ .Name }}
-      </div>
-
-      <!-- Spec Files (Children) -->
-      <div class="flex flex-col gap-1 pl-4">
-        {{ range .Children }}
-        <a
-          href="/view?file={{ .Path }}"
-          class="flex items-center text-sm gap-2 py-1.5 px-2 rounded-md transition-colors group/item {{ if eq $.ActivePath .Path }}bg-accent text-accent-foreground font-medium{{ else }}text-muted-foreground hover:bg-accent hover:text-accent-foreground{{ end }}"
-        >
-          <svg
-            class="w-4 h-4 shrink-0"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            ></path>
-          </svg>
-          <span class="truncate">{{ .Name }}</span>
-        </a>
-        {{ else }}
-        <div class="px-2 py-1 text-xs text-muted-foreground italic">
-          Default
-        </div>
-        {{ end }}
-      </div>
-    </div>
+  <nav class="flex-1 overflow-y-auto flex flex-col gap-2">
+    {{ if .Specs }} {{ range .Specs }} {{ template "sidebar_item" . }} {{ end }}
     {{ else }}
     <div class="px-2 text-sm text-muted-foreground">No specs found.</div>
     {{ end }}
@@ -79,4 +27,52 @@
 
   <div class="mt-auto">{{ template "themeswitcher" . }}</div>
 </div>
-{{ end }}
+{{ end }} {{ define "sidebar_item" }} {{ if .IsDir }}
+<div class="flex flex-col gap-1">
+  <!-- Folder Header -->
+  <div
+    class="flex items-center text-sm font-medium text-muted-foreground px-2 py-1"
+  >
+    <svg
+      class="w-4 h-4 mr-2"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+      ></path>
+    </svg>
+    {{ .Name }}
+  </div>
+  <!-- Children -->
+  <div class="flex flex-col gap-1 pl-4 border-l border-border/40 ml-2">
+    {{ range .Children }} {{ template "sidebar_item" . }} {{ end }}
+  </div>
+</div>
+{{ else }}
+<a
+  href="/view?file={{ .Path }}"
+  class="flex items-center text-sm gap-2 py-1.5 px-2 rounded-md transition-colors group/item {{ if .Active }}bg-accent text-accent-foreground font-medium{{ else }}text-muted-foreground hover:bg-accent hover:text-accent-foreground{{ end }}"
+>
+  <svg
+    class="w-4 h-4 shrink-0"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+    ></path>
+  </svg>
+  <span class="truncate">{{ .Name }}</span>
+</a>
+{{ end }} {{ end }}

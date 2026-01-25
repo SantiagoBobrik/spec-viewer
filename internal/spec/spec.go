@@ -6,63 +6,66 @@ import (
 	"strings"
 )
 
-type Children struct {
-	Name string
-	Path string
-}
-
 type Spec struct {
 	Name     string
 	Path     string
-	Children []Children
+	IsDir    bool
+	Active   bool
+	Children []Spec
 }
 
-func GetAll(folder string) ([]Spec, error) {
-	var specs []Spec
-	err := filepath.Walk(folder, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if info.IsDir() {
-			// Skip root folder itself if it matches 'folder' exactly, or handle as needed.
-			if path == folder {
-				return nil
-			}
+func GetAll(root string) ([]Spec, error) {
+	return scanDir(root, "")
+}
 
-			specs = append(specs, Spec{
-				Name: info.Name(),
-				Path: path,
-			})
-		}
-		return nil
-	})
-
+func scanDir(root string, relBase string) ([]Spec, error) {
+	fullPath := filepath.Join(root, relBase)
+	entries, err := os.ReadDir(fullPath)
 	if err != nil {
 		return nil, err
 	}
 
-	// Now populate children for each spec
-	for i := range specs {
-		err = filepath.Walk(specs[i].Path, func(path string, info os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-			if !info.IsDir() && strings.HasSuffix(info.Name(), ".md") {
-				relPath, err := filepath.Rel(folder, path)
-				if err != nil {
-					return err
-				}
-				specs[i].Children = append(specs[i].Children, Children{
-					Name: info.Name(),
-					Path: relPath,
-				})
-			}
-			return nil
-		})
-		if err != nil {
-			return nil, err
+	var specs []Spec
+	for _, entry := range entries {
+		name := entry.Name()
+		// Skip hidden files/dirs
+		if strings.HasPrefix(name, ".") {
+			continue
 		}
+
+		// Skip non-markdown files if it's a file
+		if !entry.IsDir() && !strings.HasSuffix(name, ".md") {
+			continue
+		}
+
+		relPath := filepath.Join(relBase, name)
+		item := Spec{
+			Name:  name,
+			Path:  relPath,
+			IsDir: entry.IsDir(),
+		}
+
+		if entry.IsDir() {
+			children, err := scanDir(root, relPath)
+			if err != nil {
+				return nil, err
+			}
+			item.Children = children
+		}
+
+		specs = append(specs, item)
 	}
 
 	return specs, nil
+}
+
+func MarkActive(specs []Spec, activePath string) {
+	for i := range specs {
+		if specs[i].Path == activePath {
+			specs[i].Active = true
+		}
+		if specs[i].IsDir {
+			MarkActive(specs[i].Children, activePath)
+		}
+	}
 }
