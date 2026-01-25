@@ -32,7 +32,7 @@ func noDirectoryListing(next http.Handler) http.Handler {
 func New(hub *socket.Hub, config Config) *http.Server {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/", handlers.ListSpecsHandler(config.Folder))
+	r.HandleFunc("/", handlers.HomeHandler())
 	r.HandleFunc("/view", handlers.ViewSpecHandler(config.Folder))
 
 	publicFS, err := fs.Sub(web.Files, "public")
