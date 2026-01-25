@@ -1,20 +1,18 @@
 {{ define "content" }}
 <div class="max-w-4xl mx-auto mt-10">
-    <h2 class="text-3xl font-bold mb-6 text-indigo-400">Available Specs</h2>
+    <h2 class="text-3xl font-bold mb-6">Available Specs</h2>
     <div class="space-y-6">
         {{ range .Specs }}
-        <div class="bg-gray-800 shadow rounded-lg overflow-hidden">
-            <!-- Spec Name (Folder) -->
-            <div class="py-4 bg-gray-900 border-b border-gray-700 flex items-center">
-                <svg class="w-5 h-5 text-indigo-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+        <div class="shadow rounded-lg overflow-hidden">
+            <div class="py-4 border-b flex items-center">
+                <svg class="w-5 h-5  mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
                 <h3 class="text-lg font-semibold text-white">{{ .Name }}</h3>
             </div>
-            
-            <!-- Children (Files) -->
-            <ul class="divide-y divide-gray-700">
+
+            <ul class="divide-y">
                 {{ range .Children }}
                 <li class="hover:bg-gray-700 transition duration-150 ease-in-out">
-                    <a href="/view?file={{ .Path }}" class="block px-6 py-3 pl-10 border-l-4 border-transparent hover:border-indigo-500">
+                    <a href="/view?file={{ .Path }}" class="block px-6 py-3 pl-10 border-l-4 border-transparent">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center">
                                 <svg class="w-4 h-4 text-gray-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
@@ -23,7 +21,7 @@
                                 </div>
                             </div>
                             <div class="ml-2 flex-shrink-0">
-                                <svg class="h-4 w-4 text-gray-500 group-hover:text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg class="h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                 </svg>
                             </div>

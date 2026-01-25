@@ -18,6 +18,20 @@ func init() {
 		log.Fatalf("Error parsing base layout: %v", err)
 	}
 
+	// Parse components (partials) so they are available to all pages
+	components, err := filepath.Glob(filepath.Join("web", "templates", "components", "*.html"))
+	if err != nil {
+		log.Fatalf("Error globbing components: %v", err)
+	}
+
+	if len(components) > 0 {
+		// ParseFiles adds the parsed templates to the existing template set
+		baseTmpl, err = baseTmpl.ParseFiles(components...)
+		if err != nil {
+			log.Fatalf("Error parsing components: %v", err)
+		}
+	}
+
 	// Find all page templates (e.g., web/templates/*.html)
 	pages, err := filepath.Glob(filepath.Join("web", "templates", "*.html"))
 	if err != nil {
@@ -29,7 +43,7 @@ func init() {
 		// Extract the template name without extension (e.g., "login" from "login.html")
 		tmplName := strings.TrimSuffix(name, filepath.Ext(name))
 
-		// Clone the base template
+		// Clone the base template which now includes the components
 		ts, err := baseTmpl.Clone()
 		if err != nil {
 			log.Fatalf("Error cloning base template for %s: %v", name, err)
