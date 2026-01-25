@@ -1,6 +1,8 @@
 # Spec Viewer
 <p align="center">
-  <img width="470" height="224" alt="image" src="https://github.com/user-attachments/assets/cff9bdc6-8461-4dcb-af3e-ef7cf1403873" />
+<img width="1622" height="458" alt="image" src="https://github.com/user-attachments/assets/6aec476d-6ea9-46f3-b45e-6dbbe8189cf0" />
+<img width="1874" height="312" alt="image" src="https://github.com/user-attachments/assets/5fc1c851-b6dd-4ae5-adb6-6b9587469865" />
+
 </p>
 
 > [!IMPORTANT]
