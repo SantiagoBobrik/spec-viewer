@@ -22,7 +22,7 @@ type Config struct {
 func noDirectoryListing(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if strings.HasSuffix(r.URL.Path, "/") {
-			http.NotFound(w, r)
+			handlers.NotFoundHandler().ServeHTTP(w, r)
 			return
 		}
 		next.ServeHTTP(w, r)
@@ -31,6 +31,8 @@ func noDirectoryListing(next http.Handler) http.Handler {
 
 func New(hub *socket.Hub, config Config) *http.Server {
 	r := mux.NewRouter()
+
+	r.NotFoundHandler = handlers.NotFoundHandler()
 
 	r.HandleFunc("/", handlers.HomeHandler())
 	r.HandleFunc("/view", handlers.ViewSpecHandler(config.Folder))
