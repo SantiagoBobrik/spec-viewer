@@ -1,14 +1,30 @@
 {{ define "themeswitcher" }}
 <button
+  x-data="{
+    isDark: document.documentElement.classList.contains('dark'),
+    init() {
+      if ('themeMode' in localStorage) {
+        this.isDark = localStorage.getItem('themeMode') === 'dark';
+      } else {
+        this.isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      }
+      document.documentElement.classList.toggle('dark', this.isDark);
+    },
+    toggle() {
+      this.isDark = !this.isDark;
+      localStorage.setItem('themeMode', this.isDark ? 'dark' : 'light');
+      document.documentElement.classList.toggle('dark', this.isDark);
+    }
+  }"
   type="button"
   aria-label="Toggle dark mode"
   data-tooltip="Toggle dark mode"
   data-side="bottom"
-  onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+  @click="toggle()"
   class="btn-icon-outline size-8"
 >
-  <span class="hidden dark:block"
-    ><svg
+  <span x-show="isDark" style="display: none">
+    <svg
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
@@ -27,10 +43,11 @@
       <path d="M2 12h2" />
       <path d="M20 12h2" />
       <path d="m6.34 17.66-1.41 1.41" />
-      <path d="m19.07 4.93-1.41 1.41" /></svg
-  ></span>
-  <span class="block dark:hidden"
-    ><svg
+      <path d="m19.07 4.93-1.41 1.41" />
+    </svg>
+  </span>
+  <span x-show="!isDark">
+    <svg
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
@@ -41,40 +58,8 @@
       stroke-linecap="round"
       stroke-linejoin="round"
     >
-      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg
-  ></span>
+      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+    </svg>
+  </span>
 </button>
-
-<script>
-  (() => {
-    try {
-      const stored = localStorage.getItem("themeMode");
-      if (
-        stored
-          ? stored === "dark"
-          : matchMedia("(prefers-color-scheme: dark)").matches
-      ) {
-        document.documentElement.classList.add("dark");
-      }
-    } catch (_) {}
-
-    const apply = (dark) => {
-      document.documentElement.classList.toggle("dark", dark);
-      try {
-        localStorage.setItem("themeMode", dark ? "dark" : "light");
-      } catch (_) {}
-    };
-
-    document.addEventListener("basecoat:theme", (event) => {
-      const mode = event.detail?.mode;
-      apply(
-        mode === "dark"
-          ? true
-          : mode === "light"
-            ? false
-            : !document.documentElement.classList.contains("dark"),
-      );
-    });
-  })();
-</script>
 {{ end }}

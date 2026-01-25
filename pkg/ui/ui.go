@@ -9,9 +9,9 @@ import (
 
 var (
 	timestampStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("240"))              // Grey
-	eventStyle     = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("39"))    // Blue/Cyan
-	fileStyle      = lipgloss.NewStyle().Italic(true).Foreground(lipgloss.Color("245")) // Light Grey
-	successStyle   = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("42"))    // Green
+	eventStyle     = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("63"))    // Indigo
+	fileStyle      = lipgloss.NewStyle().Italic(true).Foreground(lipgloss.Color("250")) // Light Grey
+	successStyle   = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("63"))    // Indigo
 )
 
 func PrintFileChange(path string) {

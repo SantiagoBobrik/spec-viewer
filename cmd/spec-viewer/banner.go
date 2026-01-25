@@ -7,9 +7,9 @@ import (
 )
 
 func PrintBanner(port, folder string) {
-	primary := lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
-	secondary := lipgloss.NewStyle().Foreground(lipgloss.Color("240"))
-	green := lipgloss.NewStyle().Foreground(lipgloss.Color("42"))
+	primary := lipgloss.NewStyle().Foreground(lipgloss.Color("63"))    // Indigo
+	secondary := lipgloss.NewStyle().Foreground(lipgloss.Color("250")) // Light Grey
+	accent := lipgloss.NewStyle().Foreground(lipgloss.Color("255"))    // White
 	bold := lipgloss.NewStyle().Bold(true)
 
 	asciiArt := `
@@ -35,7 +35,7 @@ func PrintBanner(port, folder string) {
 
  %s
 `,
-		green.Render(statusKey),
+		accent.Render(statusKey),
 		urlKey, urlValue,
 		folderKey, folderValue,
 		quitMsg,
@@ -43,7 +43,7 @@ func PrintBanner(port, folder string) {
 
 	box := lipgloss.NewStyle().
 		Border(lipgloss.RoundedBorder()).
-		BorderForeground(lipgloss.Color("62")).
+		BorderForeground(lipgloss.Color("63")). // Indigo border
 		Padding(0, 1).
 		Width(60).
 		Render(content)

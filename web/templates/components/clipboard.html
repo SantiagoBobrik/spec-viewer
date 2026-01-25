@@ -1,0 +1,50 @@
+{{ define "clipboard" }}
+<div x-data="{ copied: false }" class="inline-flex">
+  <button
+    type="button"
+    class="btn-icon-outline size-8 shrink-0"
+    @click="navigator.clipboard.writeText('{{ . }}'); copied = true; setTimeout(() => copied = false, 2000)"
+    aria-label="Copy to clipboard"
+    :aria-label="copied ? 'Copied' : 'Copy to clipboard'"
+    data-tooltip="Copy"
+  >
+    <span x-show="!copied" class="flex items-center justify-center">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
+        <path
+          d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+        />
+      </svg>
+    </span>
+    <span
+      x-show="copied"
+      class="flex items-center justify-center text-green-500"
+      style="display: none"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M20 6 9 17l-5-5" />
+      </svg>
+    </span>
+  </button>
+</div>
+{{ end }}

@@ -1,18 +1,40 @@
 {{ define "content" }}
 <div class="max-w-5xl mx-auto mt-6">
-    <div class="flex justify-between items-center mb-6">
-        <a href="/" class="inline-flex items-center text-indigo-400 hover:text-indigo-300">
-            <svg class="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back to List
-        </a>
-        <h2 class="text-xl font-semibold text-gray-200">{{ .Title }}</h2>
+  <div class="flex justify-between items-center mb-6">
+    <a
+      href="/"
+      class="inline-flex items-center text-muted-foreground hover:text-primary transition-colors text-sm font-medium"
+    >
+      <svg
+        class="h-4 w-4 mr-2"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 19l-7-7m0 0l7-7m-7 7h18"
+        />
+      </svg>
+      Back to List
+    </a>
+    <div class="flex items-center gap-4">
+      <h2 class="text-xl font-semibold tracking-tight">{{ .Title }}</h2>
+      {{ template "clipboard" .Title }}
     </div>
+  </div>
 
-    <div class="bg-white text-gray-900 rounded-lg shadow-xl p-8 prose prose-indigo max-w-none">
-        <!-- Render the markdown content -->
-        {{ .Content }}
+  <div
+    class="rounded-xl border border-border bg-card text-card-foreground shadow-sm"
+  >
+    <div
+      class="p-8 prose dark:prose-invert max-w-none prose-headings:font-semibold prose-a:text-primary prose-a:no-underline hover:prose-a:underline"
+    >
+      {{ .Content }}
     </div>
+  </div>
 </div>
 {{ end }}

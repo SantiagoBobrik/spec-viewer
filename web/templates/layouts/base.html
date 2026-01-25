@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <title>Home - Spec Viewer</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.10/dist/basecoat.cdn.min.css"
@@ -14,6 +14,21 @@
     ></script>
     <script src="//unpkg.com/alpinejs" defer></script>
     <script src="/public/js/main.js"></script>
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("themeMode");
+          var isDark = stored
+            ? stored === "dark"
+            : window.matchMedia("(prefers-color-scheme: dark)").matches;
+          if (isDark) {
+            document.documentElement.classList.add("dark");
+          } else {
+            document.documentElement.classList.remove("dark");
+          }
+        } catch (e) {}
+      })();
+    </script>
     <script>
       tailwind.config = {
         darkMode: "class",
@@ -124,7 +139,9 @@
     <header
       class="border-b border-border sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
     >
-      <div class="container mx-auto px-4 h-14 flex items-center">
+      <div
+        class="container mx-auto px-4 h-14 flex items-center justify-between"
+      >
         <div class="mr-4 hidden md:flex">
           <a class="mr-6 flex items-center space-x-2" href="/">
             <svg
@@ -143,8 +160,8 @@
             </svg>
             <span class="hidden font-bold sm:inline-block">Spec Viewer</span>
           </a>
-          {{ template "themeswitcher" . }}
         </div>
+        {{ template "themeswitcher" . }}
       </div>
     </header>
     <main class="flex-1 container mx-auto p-8">{{ template "content" . }}</main>
