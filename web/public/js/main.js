@@ -1,0 +1,1 @@
+console.log("Statics loaded");
