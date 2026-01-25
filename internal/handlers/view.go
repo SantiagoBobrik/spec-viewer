@@ -22,14 +22,16 @@ func ViewSpecHandler(folder string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fileParam := r.URL.Query().Get("file")
 		if fileParam == "" {
-			http.Error(w, "File not specified", http.StatusBadRequest)
+			logger.Info("File not specified - redirecting to home")
+			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
 		}
 
 		// Security check: prevent directory traversal
 		cleanPath := filepath.Clean(fileParam)
 		if strings.Contains(cleanPath, "..") || strings.HasPrefix(cleanPath, "/") {
-			http.Error(w, "Invalid file path", http.StatusBadRequest)
+			logger.Info("Invalid file path - redirecting to home")
+			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
 		}
 
@@ -38,7 +40,8 @@ func ViewSpecHandler(folder string) http.HandlerFunc {
 		if err != nil {
 			logger.Error("Failed to read file", "file", fullPath, "error", err)
 			if os.IsNotExist(err) {
-				http.Error(w, "File not found", http.StatusNotFound)
+				logger.Info("File not found - redirecting to home")
+				http.Redirect(w, r, "/", http.StatusSeeOther)
 				return
 			}
 			http.Error(w, "Failed to read file", http.StatusInternalServerError)
