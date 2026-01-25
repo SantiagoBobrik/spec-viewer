@@ -2,12 +2,14 @@ package templates
 
 import (
 	"html/template"
+	"io/fs"
 	"log"
 	"net/http"
-	"path/filepath"
+	"path"
 	"strings"
 
 	"github.com/SantiagoBobrik/spec-viewer/internal/spec"
+	"github.com/SantiagoBobrik/spec-viewer/web"
 )
 
 // cache holds the compiled templates for each page.
@@ -18,36 +20,37 @@ var specFolder string
 func Init(folder string) {
 	specFolder = folder
 
-	layout := filepath.Join("web", "templates", "layouts", "base.html")
-	baseTmpl, err := template.ParseFiles(layout)
+	layout := "templates/layouts/base.html"
+	baseTmpl, err := template.ParseFS(web.Files, layout)
 	if err != nil {
 		log.Fatalf("Error parsing base layout: %v", err)
 	}
 
 	// Parse components (partials) so they are available to all pages
-	components, err := filepath.Glob(filepath.Join("web", "templates", "components", "*.html"))
+	components, err := fs.Glob(web.Files, "templates/components/*.html")
 	if err != nil {
 		log.Fatalf("Error globbing components: %v", err)
 	}
 
 	if len(components) > 0 {
 		// ParseFiles adds the parsed templates to the existing template set
-		baseTmpl, err = baseTmpl.ParseFiles(components...)
+		baseTmpl, err = baseTmpl.ParseFS(web.Files, "templates/components/*.html")
 		if err != nil {
 			log.Fatalf("Error parsing components: %v", err)
 		}
 	}
 
 	// Find all page templates (e.g., web/templates/*.html)
-	pages, err := filepath.Glob(filepath.Join("web", "templates", "*.html"))
+	// Note: in embedded FS, generic glob patterns work on forward slashes
+	pages, err := fs.Glob(web.Files, "templates/*.html")
 	if err != nil {
 		log.Fatalf("Error globbing templates: %v", err)
 	}
 
 	for _, page := range pages {
-		name := filepath.Base(page)
+		name := path.Base(page)
 		// Extract the template name without extension (e.g., "login" from "login.html")
-		tmplName := strings.TrimSuffix(name, filepath.Ext(name))
+		tmplName := strings.TrimSuffix(name, path.Ext(name))
 
 		// Clone the base template which now includes the components
 		ts, err := baseTmpl.Clone()
@@ -57,7 +60,8 @@ func Init(folder string) {
 
 		// Parse the individual page template into the cloned set.
 		// template.Must ensures that we panic on startup if templates are invalid.
-		cache[tmplName] = template.Must(ts.ParseFiles(page))
+		// Ts.ParseFS returns (*Template, error), which fits Must.
+		cache[tmplName] = template.Must(ts.ParseFS(web.Files, page))
 	}
 }
 

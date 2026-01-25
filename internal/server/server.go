@@ -1,11 +1,14 @@
 package server
 
 import (
+	"io/fs"
+	"log"
 	"net/http"
 	"strings"
 
 	"github.com/SantiagoBobrik/spec-viewer/internal/handlers"
 	"github.com/SantiagoBobrik/spec-viewer/internal/socket"
+	"github.com/SantiagoBobrik/spec-viewer/web"
 
 	"github.com/gorilla/mux"
 )
@@ -31,8 +34,13 @@ func New(hub *socket.Hub, config Config) *http.Server {
 
 	r.HandleFunc("/", handlers.ListSpecsHandler(config.Folder))
 	r.HandleFunc("/view", handlers.ViewSpecHandler(config.Folder))
-	// Servir archivos estáticos sin directory listing
-	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", noDirectoryListing(http.FileServer(http.Dir("./web/public")))))
+
+	publicFS, err := fs.Sub(web.Files, "public")
+	if err != nil {
+		log.Fatalf("Error creating public filesystem: %v", err)
+	}
+
+	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", noDirectoryListing(http.FileServer(http.FS(publicFS)))))
 
 	r.HandleFunc("/ws", handlers.WebSocketHandler(hub))
 
