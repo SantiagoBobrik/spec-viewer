@@ -6,12 +6,18 @@ import (
 	"net/http"
 	"path/filepath"
 	"strings"
+
+	"github.com/SantiagoBobrik/spec-viewer/internal/spec"
 )
 
 // cache holds the compiled templates for each page.
 var cache = make(map[string]*template.Template)
+var specFolder string
 
-func init() {
+// Init parses all templates and sets the spec folder.
+func Init(folder string) {
+	specFolder = folder
+
 	layout := filepath.Join("web", "templates", "layouts", "base.html")
 	baseTmpl, err := template.ParseFiles(layout)
 	if err != nil {
@@ -55,8 +61,15 @@ func init() {
 	}
 }
 
+// PageData wraps the content data with global layout data like Specs.
+type PageData struct {
+	Data       any
+	Specs      []spec.Spec
+	ActivePath string
+}
+
 // Render executes the cached template.
-func Render(w http.ResponseWriter, page string, data any) {
+func Render(w http.ResponseWriter, page string, data any, activePath ...string) {
 	ts, ok := cache[page]
 	if !ok {
 		log.Printf("Template %s not found in cache", page)
@@ -64,8 +77,24 @@ func Render(w http.ResponseWriter, page string, data any) {
 		return
 	}
 
+	specs, err := spec.GetAll(specFolder)
+	if err != nil {
+		log.Printf("Error fetching specs: %v", err)
+	}
+
+	var currentPath string
+	if len(activePath) > 0 {
+		currentPath = activePath[0]
+	}
+
+	pageData := PageData{
+		Data:       data,
+		Specs:      specs,
+		ActivePath: currentPath,
+	}
+
 	// Execute the "base.html" template.
-	err := ts.ExecuteTemplate(w, "base.html", data)
+	err = ts.ExecuteTemplate(w, "base.html", pageData)
 	if err != nil {
 		log.Printf("Error executing template %s: %v", page, err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

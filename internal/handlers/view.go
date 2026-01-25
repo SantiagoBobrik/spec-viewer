@@ -55,6 +55,6 @@ func ViewSpecHandler(folder string) http.HandlerFunc {
 		templates.Render(w, "viewer", ViewerData{
 			Title:   cleanPath,
 			Content: template.HTML(buf.String()),
-		})
+		}, cleanPath)
 	}
 }

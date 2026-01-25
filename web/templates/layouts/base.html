@@ -134,36 +134,21 @@
     />
   </head>
   <body
-    class="bg-background text-foreground antialiased min-h-screen flex flex-col"
+    class="bg-background text-foreground antialiased h-screen w-screen flex overflow-hidden"
   >
-    <header
-      class="border-b border-border sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+    <!-- Sidebar -->
+    <aside
+      class="w-64 border-r border-border bg-muted/10 h-full flex-shrink-0 flex flex-col hidden md:flex"
     >
-      <div
-        class="container mx-auto px-4 h-14 flex items-center justify-between"
-      >
-        <div class="mr-4 hidden md:flex">
-          <a class="mr-6 flex items-center space-x-2" href="/">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="h-6 w-6"
-            >
-              <path
-                d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"
-              ></path>
-            </svg>
-            <span class="hidden font-bold sm:inline-block">Spec Viewer</span>
-          </a>
-        </div>
-        {{ template "themeswitcher" . }}
-      </div>
-    </header>
-    <main class="flex-1 container mx-auto p-8">{{ template "content" . }}</main>
+      {{ template "sidebar" . }}
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col min-w-0 bg-background h-full">
+      <!-- Mobile Header / Top Bar (Optional, can be added later for mobile toggle) -->
+      <!-- For now, we assume desktop first as per PoC -->
+
+      <div class="flex-1 overflow-y-auto">{{ template "content" .Data }}</div>
+    </main>
   </body>
 </html>

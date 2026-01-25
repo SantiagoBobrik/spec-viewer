@@ -10,6 +10,7 @@ import (
 
 	"github.com/SantiagoBobrik/spec-viewer/internal/server"
 	"github.com/SantiagoBobrik/spec-viewer/internal/socket"
+	"github.com/SantiagoBobrik/spec-viewer/internal/templates"
 	"github.com/SantiagoBobrik/spec-viewer/internal/watcher"
 	"github.com/SantiagoBobrik/spec-viewer/pkg/logger"
 	"github.com/SantiagoBobrik/spec-viewer/pkg/ui"
@@ -41,6 +42,8 @@ var serveCmd = &cobra.Command{
 			Port:   port,
 			Folder: folder,
 		})
+
+		templates.Init(folder)
 
 		go func() {
 			if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {

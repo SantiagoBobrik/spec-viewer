@@ -1,5 +1,31 @@
 {{ define "content" }}
 <div
+  class="sticky top-0 z-10 bg-background flex items-center gap-2 text-sm text-muted-foreground w-full px-4 h-12 border-b border-transparent transition-colors duration-200"
+>
+  <div
+    class="flex items-center gap-2 overflow-hidden hover:bg-muted/50 py-1 px-2 rounded-md transition-colors cursor-default"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path
+        d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14 2z"
+      />
+      <polyline points="14 2 14 8 20 8" />
+    </svg>
+    <span class="truncate font-medium">{{ .Title }}</span>
+  </div>
+  <div class="ml-auto">{{ template "clipboard" .Title }}</div>
+</div>
+<div
   x-data="{
     init() {
       const connect = () => {
@@ -16,43 +42,12 @@
       connect();
     }
   }"
-  class="max-w-5xl mx-auto mt-6"
+  class="w-full max-w-3xl mx-auto px-12 md:px-20 pb-32 pt-12"
 >
-  <div class="flex justify-between items-center mb-6">
-    <a
-      href="/"
-      class="inline-flex items-center text-muted-foreground hover:text-primary transition-colors text-sm font-medium"
-    >
-      <svg
-        class="h-4 w-4 mr-2"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M10 19l-7-7m0 0l7-7m-7 7h18"
-        />
-      </svg>
-      Back to List
-    </a>
-    <div class="flex items-center gap-4">
-      <h2 class="text-xl font-semibold tracking-tight">{{ .Title }}</h2>
-      {{ template "clipboard" .Title }}
-    </div>
-  </div>
-
-  <div
-    class="rounded-xl border border-border bg-card text-card-foreground shadow-sm"
+  <article
+    class="prose dark:prose-invert max-w-none prose-headings:font-semibold prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-pre:bg-muted/50 prose-pre:border prose-pre:border-border"
   >
-    <div
-      class="p-8 prose dark:prose-invert max-w-none prose-headings:font-semibold prose-a:text-primary prose-a:no-underline hover:prose-a:underline"
-    >
-      {{ .Content }}
-    </div>
-  </div>
+    {{ .Content }}
+  </article>
 </div>
 {{ end }}
