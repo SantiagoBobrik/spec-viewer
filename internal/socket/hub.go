@@ -29,7 +29,6 @@ func (h *Hub) Add(conn *websocket.Conn) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	h.clients[conn] = true
-	logger.Info("Client connected", "total_clients", len(h.clients))
 }
 
 func (h *Hub) Remove(conn *websocket.Conn) {
@@ -38,7 +37,6 @@ func (h *Hub) Remove(conn *websocket.Conn) {
 	if _, ok := h.clients[conn]; ok {
 		delete(h.clients, conn)
 		conn.Close()
-		logger.Info("Client disconnected", "total_clients", len(h.clients))
 	}
 }
 
