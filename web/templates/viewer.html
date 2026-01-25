@@ -1,5 +1,23 @@
 {{ define "content" }}
-<div class="max-w-5xl mx-auto mt-6">
+<div
+  x-data="{
+    init() {
+      const connect = () => {
+        const socket = new WebSocket('ws://' + window.location.host + '/ws');
+        socket.onmessage = (event) => {
+          if (event.data === 'reload') {
+            window.location.reload();
+          }
+        };
+        socket.onclose = () => {
+          setTimeout(connect, 1000);
+        };
+      };
+      connect();
+    }
+  }"
+  class="max-w-5xl mx-auto mt-6"
+>
   <div class="flex justify-between items-center mb-6">
     <a
       href="/"
