@@ -11,34 +11,79 @@ import (
 )
 
 type ListSpecsData struct {
-	Files []string
+	Specs []Spec
+}
+
+type Children struct {
+	Name string
+	Path string
+}
+
+type Spec struct {
+	Name     string
+	Path     string
+	Children []Children
 }
 
 func ListSpecsHandler(folder string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var files []string
-		err := filepath.Walk(folder, func(path string, info os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-			if !info.IsDir() && strings.HasSuffix(info.Name(), ".md") {
-				relPath, err := filepath.Rel(folder, path)
+		// Get all specs names
+		specs, err := extractSpecs(folder)
+		if err != nil {
+			handleError(w, err)
+			return
+		}
+		for i := range specs {
+			err = filepath.Walk(specs[i].Path, func(path string, info os.FileInfo, err error) error {
 				if err != nil {
 					return err
 				}
-				files = append(files, relPath)
+				if !info.IsDir() && strings.HasSuffix(info.Name(), ".md") {
+					relPath, err := filepath.Rel(folder, path)
+					if err != nil {
+						return err
+					}
+					specs[i].Children = append(specs[i].Children, Children{
+						Name: info.Name(),
+						Path: relPath,
+					})
+				}
+				return nil
+			})
+			if err != nil {
+				handleError(w, err)
+				return
 			}
-			return nil
-		})
-
-		if err != nil {
-			logger.Error("Failed to list files", "error", err)
-			http.Error(w, "Failed to list files", http.StatusInternalServerError)
-			return
 		}
 
 		templates.Render(w, "list", ListSpecsData{
-			Files: files,
+			Specs: specs,
 		})
 	}
+}
+
+func handleError(w http.ResponseWriter, err error) {
+	logger.Error("Failed to list files", "error", err)
+	http.Error(w, "Failed to list files", http.StatusInternalServerError)
+}
+
+func extractSpecs(folder string) ([]Spec, error) {
+	var specs []Spec
+	err := filepath.Walk(folder, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			specs = append(specs, Spec{
+				Name: info.Name(),
+				Path: path,
+			})
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	// remove first element - root folder
+	return specs[1:], nil
 }
