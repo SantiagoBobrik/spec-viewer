@@ -18,7 +18,6 @@ type Config struct {
 	Folder string
 }
 
-// noDirectoryListing intercepta peticiones a directorios y retorna 404
 func noDirectoryListing(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if strings.HasSuffix(r.URL.Path, "/") {
