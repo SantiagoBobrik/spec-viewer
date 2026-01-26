@@ -48,6 +48,7 @@ func Watch(ctx context.Context, root string, hub *socket.Hub) {
 				}
 			}
 
+			// Notify clients of changes
 			if event.Has(fsnotify.Write) || event.Has(fsnotify.Create) || event.Has(fsnotify.Remove) {
 				ui.PrintFileChange(event.Name)
 				hub.Broadcast(socket.Events.Reload)
