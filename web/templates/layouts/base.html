@@ -15,21 +15,6 @@
     <script src="//unpkg.com/alpinejs" defer></script>
     <script src="/public/js/main.js"></script>
     <script>
-      (function () {
-        try {
-          var stored = localStorage.getItem("themeMode");
-          var isDark = stored
-            ? stored === "dark"
-            : window.matchMedia("(prefers-color-scheme: dark)").matches;
-          if (isDark) {
-            document.documentElement.classList.add("dark");
-          } else {
-            document.documentElement.classList.remove("dark");
-          }
-        } catch (e) {}
-      })();
-    </script>
-    <script>
       tailwind.config = {
         darkMode: "class",
         theme: {
