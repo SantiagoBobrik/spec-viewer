@@ -18,6 +18,8 @@ var specFolder string
 
 // Init parses all templates and sets the spec folder.
 func Init(folder string) {
+	// Refresh
+	cache = make(map[string]*template.Template)
 	specFolder = folder
 
 	layout := "templates/layouts/base.html"
@@ -26,18 +28,13 @@ func Init(folder string) {
 		log.Fatalf("Error parsing base layout: %v", err)
 	}
 
-	// Parse components (partials) so they are available to all pages
-	components, err := fs.Glob(web.Files, "templates/components/*.html")
+	// Parse components
+	baseTmpl, err = baseTmpl.ParseFS(
+		web.Files,
+		"templates/components/*.html",
+	)
 	if err != nil {
-		log.Fatalf("Error globbing components: %v", err)
-	}
-
-	if len(components) > 0 {
-		// ParseFiles adds the parsed templates to the existing template set
-		baseTmpl, err = baseTmpl.ParseFS(web.Files, "templates/components/*.html")
-		if err != nil {
-			log.Fatalf("Error parsing components: %v", err)
-		}
+		log.Fatalf("Error parsing components: %v", err)
 	}
 
 	// Find all page templates (e.g., web/templates/*.html)
@@ -45,6 +42,10 @@ func Init(folder string) {
 	pages, err := fs.Glob(web.Files, "templates/*.html")
 	if err != nil {
 		log.Fatalf("Error globbing templates: %v", err)
+	}
+
+	if len(pages) == 0 {
+		log.Fatalf("No page templates found under templates/*.html")
 	}
 
 	for _, page := range pages {
@@ -95,6 +96,8 @@ func Render(w http.ResponseWriter, page string, data any, activePath ...string) 
 	}
 
 	// Execute the "base.html" template.
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
 	err = ts.ExecuteTemplate(w, "base.html", pageData)
 	if err != nil {
 		log.Printf("Error executing template %s: %v", page, err)
