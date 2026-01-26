@@ -18,51 +18,41 @@ var specFolder string
 
 // Init parses all templates and sets the spec folder.
 func Init(folder string) {
-	// Refresh
-	cache = make(map[string]*template.Template)
 	specFolder = folder
+	cache = make(map[string]*template.Template)
 
-	layout := "templates/layouts/base.html"
-	baseTmpl, err := template.ParseFS(web.Files, layout)
+	baseTmpl, err := template.ParseFS(web.Files, "templates/layouts/base.html")
 	if err != nil {
 		log.Fatalf("Error parsing base layout: %v", err)
 	}
 
-	// Parse components
-	baseTmpl, err = baseTmpl.ParseFS(
-		web.Files,
-		"templates/components/*.html",
-	)
+	baseTmpl, err = baseTmpl.ParseFS(web.Files, "templates/components/*.html")
 	if err != nil {
 		log.Fatalf("Error parsing components: %v", err)
 	}
 
-	// Find all page templates (e.g., web/templates/*.html)
-	// Note: in embedded FS, generic glob patterns work on forward slashes
 	pages, err := fs.Glob(web.Files, "templates/*.html")
 	if err != nil {
 		log.Fatalf("Error globbing templates: %v", err)
 	}
-
 	if len(pages) == 0 {
 		log.Fatalf("No page templates found under templates/*.html")
 	}
 
 	for _, page := range pages {
-		name := path.Base(page)
-		// Extract the template name without extension (e.g., "login" from "login.html")
-		tmplName := strings.TrimSuffix(name, path.Ext(name))
+		tmplName := strings.TrimSuffix(path.Base(page), path.Ext(page))
 
-		// Clone the base template which now includes the components
 		ts, err := baseTmpl.Clone()
 		if err != nil {
-			log.Fatalf("Error cloning base template for %s: %v", name, err)
+			log.Fatalf("Error cloning base template for %s: %v", page, err)
 		}
 
-		// Parse the individual page template into the cloned set.
-		// template.Must ensures that we panic on startup if templates are invalid.
-		// Ts.ParseFS returns (*Template, error), which fits Must.
-		cache[tmplName] = template.Must(ts.ParseFS(web.Files, page))
+		ts, err = ts.ParseFS(web.Files, page)
+		if err != nil {
+			log.Fatalf("Error parsing page template %s: %v", page, err)
+		}
+
+		cache[tmplName] = ts
 	}
 }
 
