@@ -65,53 +65,30 @@
       </svg>
     </button>
     {{ end }}
+    <div x-data="copyComments" x-show="hasComments" x-cloak class="inline-flex">
+      <button
+        type="button"
+        class="btn-icon-outline size-8 shrink-0"
+        @click="copyAndPurge()"
+        :aria-label="copied ? 'Copied & purged' : 'Copy comments as LLM prompt'"
+        data-tooltip="Copy comments"
+      >
+        <span x-show="!copied" class="flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        </span>
+        <span x-show="copied" class="flex items-center justify-center text-green-500" style="display:none">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 6 9 17l-5-5"/>
+          </svg>
+        </span>
+      </button>
+    </div>
     {{ template "clipboard" .Title }}
   </div>
 </div>
-<div
-  x-data="{
-    init() {
-      const scrollContainer = this.$el.closest('.overflow-y-auto');
-      const connect = () => {
-        const ws = new WebSocket('ws://' + window.location.host + '/ws');
-        ws.onmessage = (event) => {
-          if (event.data === 'reload') {
-            const file = new URLSearchParams(window.location.search).get('file');
-            if (!file) {
-              window.location.reload();
-              return;
-            }
-            const scrollTop = scrollContainer ? scrollContainer.scrollTop : 0;
-            fetch('/api/view?file=' + encodeURIComponent(file))
-              .then(resp => {
-                if (!resp.ok) throw new Error('Failed to fetch content');
-                return resp.text();
-              })
-              .then(html => {
-                const el = document.getElementById('spec-content');
-                if (el) {
-                  el.innerHTML = html;
-                  if (scrollContainer) {
-                    scrollContainer.scrollTop = scrollTop;
-                  }
-                } else {
-                  window.location.reload();
-                }
-              })
-              .catch(() => {
-                window.location.reload();
-              });
-          }
-        };
-        ws.onclose = () => {
-          setTimeout(connect, 1000);
-        };
-      };
-      connect();
-    }
-  }"
-  class="flex w-full"
->
+<div x-data="smartReload" class="flex w-full">
   <div class="flex-1 min-w-0 w-full max-w-3xl mx-auto px-4 sm:px-8 md:px-20 pb-32 pt-8 md:pt-12">
     <article
       id="spec-content"
@@ -119,6 +96,65 @@
     >
       {{ .Content }}
     </article>
+
+    <!-- Comment popover -->
+    <div
+      id="comment-popover"
+      x-data="commentPopover"
+      @open-comment-popover.window="show($event.detail.blockIndex)"
+      @click.outside="if (!$event.target.closest('.comment-indicator')) open = false"
+      @keydown.escape.window="open = false"
+      x-show="open"
+      x-cloak
+      x-transition:enter="transition ease-out duration-150"
+      x-transition:enter-start="opacity-0 scale-95"
+      x-transition:enter-end="opacity-100 scale-100"
+      x-transition:leave="transition ease-in duration-100"
+      x-transition:leave-start="opacity-100 scale-100"
+      x-transition:leave-end="opacity-0 scale-95"
+      class="comment-popover"
+    >
+      <div class="px-3 py-2 border-b border-border flex items-center justify-between">
+        <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Comments</span>
+        <button type="button" @click="open = false" class="btn-icon-outline size-6" aria-label="Close">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="flex-1 overflow-y-auto px-3 py-2 flex flex-col gap-2">
+        <template x-for="c in comments" :key="c.id">
+          <div class="flex items-start gap-2 text-sm group">
+            <p class="flex-1 break-words" x-text="c.text"></p>
+            <button
+              type="button"
+              @click="deleteComment(c.id)"
+              class="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-destructive-foreground hover:text-destructive"
+              aria-label="Delete comment"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+        </template>
+        <div x-show="comments.length === 0" class="text-xs text-muted-foreground italic">No comments yet</div>
+      </div>
+      <div class="px-3 py-2 border-t border-border">
+        <textarea
+          x-model="newComment"
+          @keydown.meta.enter="addComment()"
+          @keydown.ctrl.enter="addComment()"
+          placeholder="Add a comment..."
+          rows="2"
+          class="w-full text-sm bg-muted/50 border border-border rounded-md px-2 py-1.5 resize-none focus:outline-none focus:ring-1 focus:ring-ring"
+        ></textarea>
+        <div class="flex items-center justify-between mt-1.5">
+          <span class="text-[10px] text-muted-foreground">Cmd+Enter to submit</span>
+          <button type="button" @click="addComment()" class="btn-primary text-xs px-2 py-1 h-auto">Add</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   {{ if .TOC }}
@@ -126,7 +162,6 @@
     x-data="{ open: true }"
     @toggle-toc.window="open = !open"
     class="hidden xl:block sticky top-12 h-[calc(100vh-3rem)] w-64 shrink-0 border-l border-border overflow-y-auto"
-    :class="{ 'hidden xl:block': true }"
   >
     <nav x-show="open" x-transition class="p-4">
       <h3 class="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
