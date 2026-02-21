@@ -140,7 +140,7 @@ func TestHub_RemoveClient(t *testing.T) {
 	}
 
 	// Closing client conn is safe even if server already closed it.
-	conn.Close()
+	_ = conn.Close()
 }
 
 func TestHub_RemoveNonExistentClient(t *testing.T) {
@@ -174,7 +174,7 @@ func TestHub_RemoveNonExistentClient(t *testing.T) {
 		t.Errorf("expected 0 clients, got %d", count)
 	}
 
-	conn.Close()
+	_ = conn.Close()
 }
 
 func TestHub_Broadcast(t *testing.T) {
@@ -249,5 +249,5 @@ func TestHub_BroadcastRemovesDisconnectedClients(t *testing.T) {
 		t.Errorf("expected 0 clients after broadcast to dead conn, got %d", count)
 	}
 
-	conn.Close()
+	_ = conn.Close()
 }
