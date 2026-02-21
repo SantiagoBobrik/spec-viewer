@@ -72,7 +72,7 @@ func TestHub_AddClient(t *testing.T) {
 	defer server.Close()
 
 	conn := dial(t, server)
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 
 	// Give the server handler time to execute Add.
 	time.Sleep(50 * time.Millisecond)
@@ -94,7 +94,7 @@ func TestHub_AddMultipleClients(t *testing.T) {
 	conns := make([]*websocket.Conn, 3)
 	for i := 0; i < 3; i++ {
 		conns[i] = dial(t, server)
-		defer conns[i].Close()
+		defer func(c *websocket.Conn) { _ = c.Close() }(conns[i])
 	}
 
 	time.Sleep(50 * time.Millisecond)
@@ -184,9 +184,9 @@ func TestHub_Broadcast(t *testing.T) {
 
 	// Connect two clients.
 	conn1 := dial(t, server)
-	defer conn1.Close()
+	defer func() { _ = conn1.Close() }()
 	conn2 := dial(t, server)
-	defer conn2.Close()
+	defer func() { _ = conn2.Close() }()
 
 	time.Sleep(50 * time.Millisecond)
 
@@ -201,7 +201,7 @@ func TestHub_Broadcast(t *testing.T) {
 
 	// Both clients should receive the message.
 	for i, conn := range []*websocket.Conn{conn1, conn2} {
-		conn.SetReadDeadline(time.Now().Add(2 * time.Second))
+		_ = conn.SetReadDeadline(time.Now().Add(2 * time.Second))
 		_, msg, err := conn.ReadMessage()
 		if err != nil {
 			t.Fatalf("client %d: failed to read message: %v", i, err)
@@ -236,7 +236,7 @@ func TestHub_BroadcastRemovesDisconnectedClients(t *testing.T) {
 	hub.mu.Unlock()
 
 	// Close the underlying network connection to force a write failure.
-	serverConn.UnderlyingConn().Close()
+	_ = serverConn.UnderlyingConn().Close()
 
 	hub.Broadcast("reload")
 

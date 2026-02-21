@@ -17,7 +17,7 @@ func Watch(ctx context.Context, root string, hub *socket.Hub) {
 	if err != nil {
 		logger.Fatal("Failed to create watcher", "error", err)
 	}
-	defer watcher.Close()
+	defer func() { _ = watcher.Close() }()
 
 	err = filepath.WalkDir(root, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
@@ -44,7 +44,7 @@ func Watch(ctx context.Context, root string, hub *socket.Hub) {
 				info, err := os.Stat(event.Name)
 				if err == nil && info.IsDir() {
 					logger.Info("Watching new directory", "path", event.Name)
-					watcher.Add(event.Name)
+					_ = watcher.Add(event.Name)
 				}
 			}
 

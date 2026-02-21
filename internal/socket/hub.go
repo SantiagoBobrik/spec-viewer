@@ -36,7 +36,7 @@ func (h *Hub) Remove(conn *websocket.Conn) {
 	defer h.mu.Unlock()
 	if _, ok := h.clients[conn]; ok {
 		delete(h.clients, conn)
-		conn.Close()
+		_ = conn.Close()
 	}
 }
 
@@ -50,7 +50,7 @@ func (h *Hub) Broadcast(message string) {
 		if err != nil {
 			logger.Error("Failed to write to websocket, removing client", "error", err)
 			delete(h.clients, conn)
-			conn.Close()
+			_ = conn.Close()
 		}
 	}
 }

@@ -38,7 +38,7 @@ func TestMain(m *testing.M) {
 
 	code := m.Run()
 
-	os.RemoveAll(dir)
+	_ = os.RemoveAll(dir)
 	os.Exit(code)
 }
 
@@ -214,7 +214,7 @@ func TestViewSpecHandler_NestedFile_ReturnsOK(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(subdir, "deep.md"), []byte("# Deep"), 0644); err != nil {
 		t.Fatalf("failed to write deep.md: %v", err)
 	}
-	defer os.RemoveAll(subdir)
+	defer func() { _ = os.RemoveAll(subdir) }()
 
 	handler := ViewSpecHandler(testSpecDir)
 	req := httptest.NewRequest(http.MethodGet, "/view?file=nested/deep.md", nil)

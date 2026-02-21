@@ -118,7 +118,7 @@ func ViewContentHandler(folder string) http.HandlerFunc {
 		}
 
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		w.Write(html)
+		_, _ = w.Write(html)
 	}
 }
 
@@ -126,7 +126,7 @@ func ViewContentHandler(folder string) http.HandlerFunc {
 func extractTOC(doc ast.Node, source []byte) []TOCEntry {
 	var entries []TOCEntry
 
-	ast.Walk(doc, func(n ast.Node, entering bool) (ast.WalkStatus, error) {
+	_ = ast.Walk(doc, func(n ast.Node, entering bool) (ast.WalkStatus, error) {
 		if !entering {
 			return ast.WalkContinue, nil
 		}
@@ -143,7 +143,7 @@ func extractTOC(doc ast.Node, source []byte) []TOCEntry {
 				textBuf.Write(t.Segment.Value(source))
 			} else {
 				// For non-text children (e.g., code spans, emphasis), collect their text content.
-				ast.Walk(child, func(cn ast.Node, entering bool) (ast.WalkStatus, error) {
+				_ = ast.Walk(child, func(cn ast.Node, entering bool) (ast.WalkStatus, error) {
 					if entering {
 						if ct, ok := cn.(*ast.Text); ok {
 							textBuf.Write(ct.Segment.Value(source))
