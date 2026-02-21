@@ -47,6 +47,10 @@ body {
   font-family: "Inter", sans-serif;
 }
 
+[x-cloak] {
+  display: none !important;
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
@@ -70,4 +74,16 @@ body {
 * {
   scrollbar-width: thin;
   scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
+}
+
+/* Mermaid diagrams */
+.mermaid {
+  display: flex;
+  justify-content: center;
+  margin: 1.5em 0;
+}
+
+.mermaid svg {
+  max-width: 100%;
+  height: auto;
 }

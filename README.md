@@ -20,7 +20,12 @@ Unlike generic Markdown viewers, Spec Viewer is tailored to the specific needs o
 ## Features
 
 - **SDD Optimization**: Designed to render Spec Kit artifacts with precision.
-- **Live Synchronization**: Instant feedback loop for file changes using efficient WebSocket connections.
+- **Live Synchronization**: Instant feedback loop for file changes using WebSocket connections with scroll-preserving hot reload.
+- **GitHub Flavored Markdown**: Full support for tables, task lists, strikethrough, and auto-linked URLs.
+- **Mermaid Diagrams**: Render flowcharts, sequence diagrams, ER diagrams, and more directly in your specs.
+- **Table of Contents**: Auto-generated from headings with desktop sidebar and mobile overlay.
+- **Sidebar Search**: Filter specs by file or folder name.
+- **Mobile Responsive**: Collapsible sidebar and TOC overlays for mobile and tablet.
 - **Zero Configuration**: Adheres to Spec Kit conventions "out of the box" without requiring complex setup.
 - **Global Accessibility**: Runs as a standalone CLI tool primarily for local development environments.
 

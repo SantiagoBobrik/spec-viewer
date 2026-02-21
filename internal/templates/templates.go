@@ -16,12 +16,18 @@ import (
 var cache = make(map[string]*template.Template)
 var specFolder string
 
+// funcMap provides custom template functions available in all templates.
+var funcMap = template.FuncMap{
+	"multiply": func(a, b int) int { return a * b },
+	"subtract": func(a, b int) int { return a - b },
+}
+
 // Init parses all templates and sets the spec folder.
 func Init(folder string) {
 	specFolder = folder
 	cache = make(map[string]*template.Template)
 
-	baseTmpl, err := template.ParseFS(web.Files, "templates/layouts/base.html")
+	baseTmpl, err := template.New("base.html").Funcs(funcMap).ParseFS(web.Files, "templates/layouts/base.html")
 	if err != nil {
 		log.Fatalf("Error parsing base layout: %v", err)
 	}

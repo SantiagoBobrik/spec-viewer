@@ -35,6 +35,7 @@ func New(hub *socket.Hub, config Config) *http.Server {
 
 	r.HandleFunc("/", handlers.HomeHandler())
 	r.HandleFunc("/view", handlers.ViewSpecHandler(config.Folder))
+	r.HandleFunc("/api/view", handlers.ViewContentHandler(config.Folder))
 
 	publicFS, err := fs.Sub(web.Files, "public")
 	if err != nil {

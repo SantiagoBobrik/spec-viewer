@@ -2,6 +2,19 @@
 <div
   class="sticky top-0 z-10 bg-background flex items-center gap-2 text-sm text-muted-foreground w-full px-4 h-12 border-b border-transparent transition-colors duration-200"
 >
+  <!-- Mobile menu button -->
+  <button
+    type="button"
+    class="btn-icon-outline size-8 shrink-0 md:hidden"
+    @click="$dispatch('toggle-sidebar')"
+    aria-label="Open sidebar"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="4" y1="12" x2="20" y2="12" />
+      <line x1="4" y1="18" x2="20" y2="18" />
+    </svg>
+  </button>
   <div
     class="flex items-center gap-2 overflow-hidden hover:bg-muted/50 py-1 px-2 rounded-md transition-colors cursor-default"
   >
@@ -23,31 +36,177 @@
     </svg>
     <span class="truncate font-medium">{{ .Title }}</span>
   </div>
-  <div class="ml-auto">{{ template "clipboard" .Title }}</div>
+  <div class="ml-auto flex items-center gap-1">
+    {{ if .TOC }}
+    <button
+      type="button"
+      class="btn-icon-outline size-8 shrink-0 xl:hidden"
+      @click="$dispatch('toggle-toc')"
+      aria-label="Toggle table of contents"
+      data-tooltip="Table of contents"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <line x1="8" y1="6" x2="21" y2="6" />
+        <line x1="8" y1="12" x2="21" y2="12" />
+        <line x1="8" y1="18" x2="21" y2="18" />
+        <line x1="3" y1="6" x2="3.01" y2="6" />
+        <line x1="3" y1="12" x2="3.01" y2="12" />
+        <line x1="3" y1="18" x2="3.01" y2="18" />
+      </svg>
+    </button>
+    {{ end }}
+    {{ template "clipboard" .Title }}
+  </div>
 </div>
 <div
   x-data="{
     init() {
+      const scrollContainer = this.$el.closest('.overflow-y-auto');
       const connect = () => {
-        const socket = new WebSocket('ws://' + window.location.host + '/ws');
-        socket.onmessage = (event) => {
+        const ws = new WebSocket('ws://' + window.location.host + '/ws');
+        ws.onmessage = (event) => {
           if (event.data === 'reload') {
-            window.location.reload();
+            const file = new URLSearchParams(window.location.search).get('file');
+            if (!file) {
+              window.location.reload();
+              return;
+            }
+            const scrollTop = scrollContainer ? scrollContainer.scrollTop : 0;
+            fetch('/api/view?file=' + encodeURIComponent(file))
+              .then(resp => {
+                if (!resp.ok) throw new Error('Failed to fetch content');
+                return resp.text();
+              })
+              .then(html => {
+                const el = document.getElementById('spec-content');
+                if (el) {
+                  el.innerHTML = html;
+                  if (scrollContainer) {
+                    scrollContainer.scrollTop = scrollTop;
+                  }
+                } else {
+                  window.location.reload();
+                }
+              })
+              .catch(() => {
+                window.location.reload();
+              });
           }
         };
-        socket.onclose = () => {
+        ws.onclose = () => {
           setTimeout(connect, 1000);
         };
       };
       connect();
     }
   }"
-  class="w-full max-w-3xl mx-auto px-12 md:px-20 pb-32 pt-12"
+  class="flex w-full"
 >
-  <article
-    class="prose dark:prose-invert max-w-none prose-headings:font-semibold prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-pre:bg-muted/50 prose-pre:border prose-pre:border-border"
+  <div class="flex-1 min-w-0 w-full max-w-3xl mx-auto px-4 sm:px-8 md:px-20 pb-32 pt-8 md:pt-12">
+    <article
+      id="spec-content"
+      class="prose dark:prose-invert max-w-none prose-headings:font-semibold prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-pre:bg-muted/50 prose-pre:border prose-pre:border-border"
+    >
+      {{ .Content }}
+    </article>
+  </div>
+
+  {{ if .TOC }}
+  <aside
+    x-data="{ open: true }"
+    @toggle-toc.window="open = !open"
+    class="hidden xl:block sticky top-12 h-[calc(100vh-3rem)] w-64 shrink-0 border-l border-border overflow-y-auto"
+    :class="{ 'hidden xl:block': true }"
   >
-    {{ .Content }}
-  </article>
+    <nav x-show="open" x-transition class="p-4">
+      <h3 class="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+        On this page
+      </h3>
+      <ul class="flex flex-col gap-1 text-sm">
+        {{ range .TOC }}
+        <li style="padding-left: {{ printf "%d" (multiply (subtract .Level 1) 12) }}px">
+          <a
+            href="#{{ .ID }}"
+            class="block py-1 text-muted-foreground hover:text-foreground transition-colors truncate"
+          >
+            {{ .Text }}
+          </a>
+        </li>
+        {{ end }}
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Mobile/tablet TOC overlay -->
+  <div
+    x-data="{ mobileOpen: false }"
+    @toggle-toc.window="mobileOpen = !mobileOpen"
+    class="xl:hidden"
+  >
+    <div
+      x-show="mobileOpen"
+      x-transition:enter="transition ease-out duration-200"
+      x-transition:enter-start="translate-x-full"
+      x-transition:enter-end="translate-x-0"
+      x-transition:leave="transition ease-in duration-150"
+      x-transition:leave-start="translate-x-0"
+      x-transition:leave-end="translate-x-full"
+      @click.outside="mobileOpen = false"
+      class="fixed top-12 right-0 h-[calc(100vh-3rem)] w-72 bg-background border-l border-border shadow-lg overflow-y-auto z-20"
+    >
+      <nav class="p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            On this page
+          </h3>
+          <button
+            type="button"
+            @click="mobileOpen = false"
+            class="btn-icon-outline size-6"
+            aria-label="Close table of contents"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <ul class="flex flex-col gap-1 text-sm">
+          {{ range .TOC }}
+          <li style="padding-left: {{ printf "%d" (multiply (subtract .Level 1) 12) }}px">
+            <a
+              href="#{{ .ID }}"
+              @click="mobileOpen = false"
+              class="block py-1 text-muted-foreground hover:text-foreground transition-colors truncate"
+            >
+              {{ .Text }}
+            </a>
+          </li>
+          {{ end }}
+        </ul>
+      </nav>
+    </div>
+  </div>
+  {{ end }}
 </div>
 {{ end }}

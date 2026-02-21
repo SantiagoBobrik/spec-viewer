@@ -1,6 +1,21 @@
 {{ define "content" }}
+<!-- Mobile menu button -->
+<div class="sticky top-0 z-10 bg-background flex items-center px-4 h-12 md:hidden">
+  <button
+    type="button"
+    class="btn-icon-outline size-8 shrink-0"
+    @click="$dispatch('toggle-sidebar')"
+    aria-label="Open sidebar"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="4" y1="12" x2="20" y2="12" />
+      <line x1="4" y1="18" x2="20" y2="18" />
+    </svg>
+  </button>
+</div>
 <div
-  class="flex min-w-0 flex-1 flex-col items-center justify-center gap-6 rounded-lg p-6 text-center text-balance md:p-12 text-neutral-800 dark:text-neutral-300 h-full p-8"
+  class="flex min-w-0 flex-1 flex-col items-center justify-center gap-6 rounded-lg p-6 text-center text-balance md:p-12 text-neutral-800 dark:text-neutral-300 h-full"
 >
   <header class="flex max-w-sm flex-col items-center gap-2 text-center">
     <div
