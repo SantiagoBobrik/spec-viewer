@@ -26,6 +26,7 @@ Unlike generic Markdown viewers, Spec Viewer is tailored to the specific needs o
 - **Mermaid Diagrams**: Render flowcharts, sequence diagrams, ER diagrams, and more directly in your specs.
 - **Table of Contents**: Auto-generated from headings with desktop sidebar and mobile overlay.
 - **Sidebar Search**: Filter specs by file or folder name.
+- **Inline Comments**: Annotate spec blocks with review comments stored in localStorage. Hover any block to reveal a comment indicator, add notes, then export all comments as an LLM-ready prompt with a single click.
 - **Mobile Responsive**: Collapsible sidebar and TOC overlays for mobile and tablet.
 - **Zero Configuration**: Adheres to Spec Kit conventions "out of the box" without requiring complex setup.
 - **Global Accessibility**: Runs as a standalone CLI tool primarily for local development environments.
@@ -34,7 +35,7 @@ Unlike generic Markdown viewers, Spec Viewer is tailored to the specific needs o
 
 Spec Viewer is distributed as a Go binary and should be installed globally to be accessible from any project directory.
 
-Ensure you have Go installed (version 1.24 or higher).
+Ensure you have Go installed (version 1.25 or higher).
 
 ```bash
 go install github.com/SantiagoBobrik/spec-viewer/cmd/spec-viewer@latest
@@ -65,6 +66,17 @@ You can override the default behaviors using command-line flags:
 2. Run `spec-viewer serve` in a separate terminal window.
 3. Open `http://localhost:9091` in your browser.
 4. As you or your AI agents update the specifications, the viewer will automatically refresh to reflect the latest state.
+
+## Inline Comments
+
+Spec Viewer includes a client-side annotation system for reviewing specs:
+
+1. **Hover** any block (paragraph, heading, list, etc.) to reveal the comment indicator in the left gutter.
+2. **Click** the indicator to open the comment popover. Add comments with the textarea or press `Cmd/Ctrl+Enter`.
+3. **Review** — blocks with comments show a persistent indicator with a count badge, and the sidebar displays a badge per file showing total comment count.
+4. **Export** — click the chat-bubble button in the header to copy all comments as an LLM-ready prompt to your clipboard. Comments are automatically purged after copying.
+
+Comments persist in `localStorage` and survive page refreshes and file edits (comments reconcile to shifted blocks via text matching).
 
 ## Contributing
 
